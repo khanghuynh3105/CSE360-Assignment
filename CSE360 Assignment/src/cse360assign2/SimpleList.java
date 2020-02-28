@@ -1,7 +1,7 @@
 /** 
  * Author: Khang Huynh
  * Class ID: kphuynh1
- * Assignment 1
+ * Assignment 2
  * <p>
  * This Java class simulates a simple list based on an array of maximum 10 integers 
  * along with several methods working on it.
@@ -28,28 +28,17 @@ public class SimpleList {
 	/**
 	 * Method which adds the parameter to the list at the beginning (index = 0). 
 	 * Move all the other integers in the list over so there is room. 
-	 * If the list was full, then the last element “falls off” the list. 
-	 * Increment the count as needed
+	 * If the list was initially full, then increase the size by 50% so there will be room.
+	 * Increment the count as needed.
 	 * @param element
 	 */
 	public void add(int element) {
-		while (count < 10) {
-			if (count == 0)
-				list[count] = element;		
-			
-			else {
-				for (int i = count; i >= 0; i--) //right-shifts array
-					list[i+1] = list[i];
-			}
-			
-			list[0] = element;
-			count++;
-		}
 		
-		list[count-1] = 0;
+		if (count == list.length) //increases the current list's size by 50% if it is full
+			newSize(3 * count / 2);
 		
-		for (int i = count; i >= 0; i--)
-			list[i+1] = list[i]; //right-shifts array
+		for (int i = count; i > 0; i--) //right-shifts remaining element(s)
+			list[i] = list[i-1];
 		
 		list[0] = element;
 		count++;
@@ -58,7 +47,9 @@ public class SimpleList {
 	/**
 	 * Method which removes the parameter if in the list. 
 	 * The other values in the list may need to be moved down. 
-	 * Adjust the count as needed
+	 * Adjust the count as needed.
+	 * If the list has more than 25% empty places, the decrease the size of the list.
+	 * The list cannot be reduced to less than 1 entry.
 	 * @param element
 	 */
 	public void remove(int element) {
@@ -66,10 +57,13 @@ public class SimpleList {
 		
 		if (location != -1) {
 			for (int i = location; i < count - 1; i++)
-				list[i] = list[i+1]; //left-shifts array
+				list[i] = list[i+1]; //left-shifts remaining element(s)
 		}
 		
 		count--;
+		
+		if (count < 3 * list.length / 4) //if the current list has more than 25% empty places, decrease the list's size
+			newSize(count);
 	}
 	
 	/**
@@ -113,5 +107,66 @@ public class SimpleList {
 		}
 			
 		return str;
+	}
+	/**
+	 * Method which appends the parameter to the end of the list.
+	 * If the list was full, then increase the size by 50% so there will be room.
+	 * Increment the count.
+	 */
+	public void append(int element) {
+		if (count == list.length) //increases the current list's size by 50% if it is full
+			newSize(3 * count / 2);
+		
+		list[count] = element; //appends the parameter to the end of the current list
+		count++;
+	}
+	
+	/**
+	 * Method which returns the first element in the list.
+	 * If there are no elements in the list, then return -1.
+	 */
+	public int first() {
+		int result = list[0];
+		
+		if (count == 0)
+			result = -1;
+		
+		return result;
+	}
+	
+	/**
+	 * Method which returns the last element in the list.
+	 * If there are no elements in the list, then return -1.
+	 */
+	public int last() {
+		int result = list[list.length - 1];
+		
+		if (count == 0)
+			result = -1;
+		
+		return result;
+	}
+	
+	/**
+	 * Method which returns the current number of possible locations in the list.
+	 * @return
+	 */
+	public int size() {
+		return list.length;
+	}
+	
+	/**
+	 * This method changes the size of the current array based on the input new size.
+	 */
+	public void newSize(int newSize) {
+		int newArr[] = new int[newSize];
+		
+		for (int i = 0; i < newSize && i < count; i++) //copy current array's element(s) to the resized array 
+			newArr[i] = list[i];
+		
+		list = newArr; //replaces the old array with the resized one
+		
+		if (newSize < count)
+			count = newSize;
 	}
 }
